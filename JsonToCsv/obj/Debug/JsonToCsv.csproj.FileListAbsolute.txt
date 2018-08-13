@@ -1,0 +1,11 @@
+C:\Users\akr01\source\repos\JsonToCsv\JsonToCsv\bin\Debug\JsonToCsv.exe.config
+C:\Users\akr01\source\repos\JsonToCsv\JsonToCsv\bin\Debug\JsonToCsv.exe
+C:\Users\akr01\source\repos\JsonToCsv\JsonToCsv\bin\Debug\JsonToCsv.pdb
+C:\Users\akr01\source\repos\JsonToCsv\JsonToCsv\bin\Debug\Newtonsoft.Json.dll
+C:\Users\akr01\source\repos\JsonToCsv\JsonToCsv\bin\Debug\TinyCsvParser.dll
+C:\Users\akr01\source\repos\JsonToCsv\JsonToCsv\bin\Debug\Newtonsoft.Json.xml
+C:\Users\akr01\source\repos\JsonToCsv\JsonToCsv\obj\Debug\JsonToCsv.csproj.CoreCompileInputs.cache
+C:\Users\akr01\source\repos\JsonToCsv\JsonToCsv\obj\Debug\JsonToCsv.csproj.CopyComplete
+C:\Users\akr01\source\repos\JsonToCsv\JsonToCsv\obj\Debug\JsonToCsv.exe
+C:\Users\akr01\source\repos\JsonToCsv\JsonToCsv\obj\Debug\JsonToCsv.pdb
+C:\Users\akr01\source\repos\JsonToCsv\JsonToCsv\obj\Debug\JsonToCsv.csprojAssemblyReference.cache
