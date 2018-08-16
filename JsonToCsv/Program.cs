@@ -35,13 +35,14 @@ namespace JsonToCsv
             IEnumerable<MsgItem> kibana = null;
             IEnumerable<Item> appCenter = null;
             Console.WriteLine("Running PushNotification script");
+            kibana = KibanaFolderSearch("Logs/Kibana");
 
             List<CsvMappingResult<DbItem>> dbItems = null;
             try
             {
                 dbItems = PopulateDbItems("Logs/DbItems", "dbItems.csv");
                 appCenter = RecursiveFolderTraverse("Logs/Appcenter");
-                kibana = KibanaFolderSearch("Logs/Kibana");
+                Console.WriteLine();
             }
             catch (Exception ex)
             {
@@ -53,10 +54,12 @@ namespace JsonToCsv
                     Console.ReadLine();
                     return;
                 }
+
+                throw;
             }
 
             _myList = appCenter.Join(
-                kibana, x => x.Eid, x => x.eid,
+                kibana ?? throw new InvalidOperationException(), x => x.Eid, x => x.eid,
                 (x, y) =>
                     {
                         DbItem enq = null;
@@ -190,7 +193,7 @@ namespace JsonToCsv
             try
             {
                 Directory.Exists(folderName);
-                CsvParserOptions csvParserOptions = new CsvParserOptions(true, ',');
+                CsvParserOptions csvParserOptions = new CsvParserOptions(true, ';');
                 DbItemMapping csvMapper = new DbItemMapping();
                 CsvParser<DbItem> csvParser = new CsvParser<DbItem>(csvParserOptions, csvMapper);
 
@@ -240,27 +243,57 @@ namespace JsonToCsv
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
         private static IEnumerable<MsgItem> KibanaFolderSearch(string folderName)
         {
-            try
-            {
-                var files = Directory.GetFiles(folderName, "*", SearchOption.AllDirectories)
-                    .Select(File.ReadAllText).SelectMany(x => x.Split('\n'));
 
-                return files.Select(JsonConvert.DeserializeObject<MsgItem>).Where(x => x != null && x.Message.Contains(KibanaEventName))
-                    .Select(x => new MsgItem()
-                                     {
-                                         Message = x.Message,
-                                         Timestamp = x.Timestamp,
-                                         eid = Guid.Parse(x.Message.Substring(x.Message.IndexOf("eid", StringComparison.Ordinal) + 6, 36))
-                                     })
-                    .ToList();
+            var files = Directory.GetFiles(folderName, "*", SearchOption.AllDirectories).Select(File.ReadAllText).SelectMany(x => x.Split('\n'));
 
-            }
-            catch (DirectoryNotFoundException ex)
-            {
-                ex.Data.Add("Type", "Directory");
-                ex.Data.Add("FolderName", folderName);
-                throw;
-            }
+            //foreach (var file in enumerable)
+            //{
+            //    Console.WriteLine(file.ToString());
+            //}
+
+            //return files.Select(JsonConvert.DeserializeObject<MsgItem>)
+            //    .Where(x => x != null && x.Message.Contains(KibanaEventName));
+
+
+            //var files = Directory.GetFiles(folderName, "*", SearchOption.AllDirectories)
+            //    .Select(File.ReadAllText).SelectMany(x => x.Split('\n'));
+
+            return files.Select(JsonConvert.DeserializeObject<MsgItem>).Where(x => x != null && x.Message.Contains(KibanaEventName))
+                .Select(x =>
+                {
+                    try
+                    {
+                        var msgItem = new MsgItem()
+                        {
+                            Message = x.Message,
+                            Timestamp = x.Timestamp,
+
+                        };
+                        var guid = Guid.Parse(x.Message.Substring(
+                            x.Message.IndexOf("eid\":", StringComparison.Ordinal) + 6,
+                            36));
+                        msgItem.eid = guid;
+                        return msgItem;
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                        throw;
+                    }
+
+
+                })
+                .ToList();
+            //try
+            //{
+
+            //}
+            //catch (DirectoryNotFoundException ex)
+            //{
+            //    ex.Data.Add("Type", "Directory");
+            //    ex.Data.Add("FolderName", folderName);
+            //    throw;
+            //}
         }
     }
 
